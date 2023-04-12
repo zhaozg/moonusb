@@ -62,7 +62,7 @@ void moonusb_utils_init(lua_State *L);
 #define copytable moonusb_copytable
 int copytable(lua_State *L);
 #define noprintf moonusb_noprintf
-int noprintf(const char *fmt, ...); 
+int noprintf(const char *fmt, ...);
 #define now moonusb_now
 double now(void);
 #define sleeep moonusb_sleeep
@@ -167,7 +167,6 @@ int pusherrcode(lua_State *L, int ec);
 extern int trace_objects;
 
 /* main.c */
-extern lua_State *moonusb_L;
 int luaopen_moonusb(lua_State *L);
 void moonusb_open_enums(lua_State *L);
 //void moonusb_open_flags(lua_State *L);
@@ -230,13 +229,13 @@ void moonusb_open_hostmem(lua_State *L);
     ts = now();                                             \
 } while(0);
 
-#else 
+#else
 
 #define DBG noprintf
 #define TR()
 #define BK()
-#define TSTART do {} while(0) 
-#define TSTOP do {} while(0)    
+#define TSTART do {} while(0)
+#define TSTOP do {} while(0)
 
 #endif /* DEBUG ------------------------------------------------- */
 

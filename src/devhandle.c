@@ -53,6 +53,7 @@ int newdevhandle(lua_State *L, device_t *device, devhandle_t *devhandle)
     ud->parent_ud = userdata(device);
     ud->context = userdata(device)->context;
     ud->destructor = freedevhandle;
+    ud->L = L;
     // Automatically detach the kernel driver when an interface is claimed,
     // and re-attach it when the interface is released (only relevant on linux):
     (void)libusb_set_auto_detach_kernel_driver(devhandle, 1);
@@ -201,7 +202,7 @@ static int LockOnClose(lua_State *L)
 RAW_FUNC(devhandle)
 DESTROY_FUNC(devhandle)
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "raw", Raw },
         { "close", Destroy },
@@ -218,13 +219,13 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "lock_on_close", LockOnClose },
         { NULL, NULL } /* sentinel */

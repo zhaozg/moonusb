@@ -74,35 +74,36 @@ struct moonusb_ud_s {
     uint32_t marks;
     int ref1, ref2, ref3, ref4; /* refs for callbacks, automatically unreferenced at destruction */
     void *info; /* object specific info (ud_info_t, subject to Free() at destruction, if not NULL) */
+    lua_State *L;
 };
-    
+
 /* Marks.  m_ = marks word (uint32_t) , i_ = bit number (0 .. 31)  */
 #define MarkGet(m_,i_)  (((m_) & ((uint32_t)1<<(i_))) == ((uint32_t)1<<(i_)))
 #define MarkSet(m_,i_)  do { (m_) = ((m_) | ((uint32_t)1<<(i_))); } while(0)
 #define MarkReset(m_,i_) do { (m_) = ((m_) & (~((uint32_t)1<<(i_)))); } while(0)
 
 #define IsValid(ud)             MarkGet((ud)->marks, 0)
-#define MarkValid(ud)           MarkSet((ud)->marks, 0) 
+#define MarkValid(ud)           MarkSet((ud)->marks, 0)
 #define CancelValid(ud)         MarkReset((ud)->marks, 0)
 
 #define IsBorrowed(ud)          MarkGet((ud)->marks, 1)
-#define MarkBorrowed(ud)        MarkSet((ud)->marks, 1) 
+#define MarkBorrowed(ud)        MarkSet((ud)->marks, 1)
 #define CancelBorrowed(ud)      MarkReset((ud)->marks, 1)
 
 #define IsClaimed(ud)          MarkGet((ud)->marks, 2)
-#define MarkClaimed(ud)        MarkSet((ud)->marks, 2) 
+#define MarkClaimed(ud)        MarkSet((ud)->marks, 2)
 #define CancelClaimed(ud)      MarkReset((ud)->marks, 2)
 
 #define IsAllocated(ud)         MarkGet((ud)->marks, 3)
-#define MarkAllocated(ud)       MarkSet((ud)->marks, 3) 
+#define MarkAllocated(ud)       MarkSet((ud)->marks, 3)
 #define CancelAllocated(ud)     MarkReset((ud)->marks, 3)
 
 #define IsDma(ud)               MarkGet((ud)->marks, 4)
-#define MarkDma(ud)             MarkSet((ud)->marks, 4) 
+#define MarkDma(ud)             MarkSet((ud)->marks, 4)
 #define CancelDma(ud)           MarkReset((ud)->marks, 4)
 
 #define IsSubmitted(ud)         MarkGet((ud)->marks, 5)
-#define MarkSubmitted(ud)       MarkSet((ud)->marks, 5) 
+#define MarkSubmitted(ud)       MarkSet((ud)->marks, 5)
 #define CancelSubmitted(ud)     MarkReset((ud)->marks, 5)
 
 #if 0
@@ -117,7 +118,7 @@ int setmetatable(lua_State *L, const char *mt);
 ud_t *newuserdata(lua_State *L, void *handle, const char *mt, const char *tracename);
 #define freeuserdata moonusb_freeuserdata
 int freeuserdata(lua_State *L, ud_t *ud, const char *tracename);
-#define pushuserdata moonusb_pushuserdata 
+#define pushuserdata moonusb_pushuserdata
 int pushuserdata(lua_State *L, ud_t *ud);
 
 #define freechildren moonusb_freechildren

@@ -38,14 +38,12 @@ static int freehotplug(lua_State *L, ud_t *ud)
 
 static int Callback(context_t *context, device_t *device, libusb_hotplug_event event, void *user_data)
     {
-#define L moonusb_L
 #define hotplug ((hotplug_t*)(user_data))
     int rc;
-    ud_t *ud, *device_ud;
+    ud_t *ud = userdata(hotplug);
+    ud_t *device_ud;
+    lua_State *L = ud->L;
     int top = lua_gettop(L);
-    ud = userdata(hotplug);
-    if(!ud)
-        { unexpected(L); return 0; }
     lua_rawgeti(L, LUA_REGISTRYINDEX, ud->ref1);
     pushcontext(L, context);
     device_ud = userdata(device);
@@ -62,7 +60,6 @@ static int Callback(context_t *context, device_t *device, libusb_hotplug_event e
     lua_settop(L, top);
     return 0; /* returning 1 would cause the callback to be dereferenced */
 #undef hotplug
-#undef L
     }
 
 static int Hotplug_register(lua_State *L)
@@ -71,13 +68,13 @@ static int Hotplug_register(lua_State *L)
     int ec, ref = LUA_NOREF;
     hotplug_t *hotplug;
     context_t *context = checkcontext(L, 1, NULL);
-    int events = checkhotplugevent(L, 2); //libusb_hotplug_event  
+    int events = checkhotplugevent(L, 2); //libusb_hotplug_event
     int enumerate = optboolean(L, 4, 0);
     int vendor_id = luaL_optinteger(L, 5, LIBUSB_HOTPLUG_MATCH_ANY);
     int product_id = luaL_optinteger(L, 6, LIBUSB_HOTPLUG_MATCH_ANY);
     int dev_class = luaL_optinteger(L, 7, LIBUSB_HOTPLUG_MATCH_ANY);
     int flags = enumerate ? LIBUSB_HOTPLUG_ENUMERATE : 0;
-    if(!lua_isfunction(L, 3)) 
+    if(!lua_isfunction(L, 3))
         return argerror(L, 3, ERR_FUNCTION);
     Reference(L, 3, ref);
     hotplug = Malloc(L, sizeof(hotplug_t));
@@ -86,11 +83,12 @@ static int Hotplug_register(lua_State *L)
     ud->destructor = freehotplug;
     ud->context = context;
     ud->ref1 = ref;
+    ud->L = L;
     /* Note: if the LIBUSB_HOTPLUG_ENUMERATE flag is set, the callback is executed
      * repeatedly (once per attached device) before the register function returns, so
      * we must create the userdata before registering the callback.
      */
-    ec = libusb_hotplug_register_callback(context, events, flags, vendor_id, product_id, 
+    ec = libusb_hotplug_register_callback(context, events, flags, vendor_id, product_id,
             dev_class, Callback, hotplug, &(hotplug->cb_handle));
     if(ec)
         { ud->destructor(L, ud); CheckError(L, ec); return 0; }
@@ -99,25 +97,25 @@ static int Hotplug_register(lua_State *L)
 
 DESTROY_FUNC(hotplug)
 
-static const struct luaL_Reg ContextMethods[] = 
+static const struct luaL_Reg ContextMethods[] =
     {
         { "hotplug_register", Hotplug_register },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "deregister", Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { NULL, NULL } /* sentinel */
     };

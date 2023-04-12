@@ -73,31 +73,19 @@ static int Set_option(lua_State *L)
     return 0;
     }
 
-static int log_cb_ref = LUA_NOREF; /* reference for global log cb */
 static void LogCallback(context_t *context, enum libusb_log_level level, const char *str)
     {
-#define L moonusb_L
-    ud_t *ud;
+    ud_t *ud = userdata(context);
+    lua_State *L = ud->L;
     int top = lua_gettop(L);
-    if(context) /* context callback */
-        {
-        ud = userdata(context);
-        if(!ud) { unexpected(L); return; } 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, ud->ref1);
-        pushcontext(L, context);
-        }
-    else /* global callback */
-        {
-        lua_rawgeti(L, LUA_REGISTRYINDEX, log_cb_ref);
-        lua_pushnil(L);
-        }
+    lua_rawgeti(L, LUA_REGISTRYINDEX, ud->ref1);
+    pushcontext(L, context);
     pushloglevel(L, level);
     lua_pushstring(L, str);
     if(lua_pcall(L, 3, 0, 0) != LUA_OK)
         { lua_error(L); return; }
     lua_settop(L, top);
     return;
-#undef L
     }
 
 static int Set_log_cb(lua_State *L)
@@ -107,16 +95,8 @@ static int Set_log_cb(lua_State *L)
     context_t *context = optcontext(L, 1, &ud);
     if(!lua_isfunction(L, 2))
         { return argerror(L, 2, ERR_FUNCTION); }
-    if(context)
-        {
-        mode = LIBUSB_LOG_CB_CONTEXT;
-        Reference(L, 2, ud->ref1);
-        }
-    else
-        {
-        mode = LIBUSB_LOG_CB_GLOBAL;
-        Reference(L, 2, log_cb_ref);
-        }
+    mode = LIBUSB_LOG_CB_CONTEXT;
+    Reference(L, 2, ud->ref1);
     libusb_set_log_cb(context, LogCallback, mode);
     return 0;
     }
@@ -167,7 +147,7 @@ static int Wrap_sys_device(lua_State *L)
 RAW_FUNC(context)
 DESTROY_FUNC(context)
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "raw", Raw },
         { "exit", Destroy },
@@ -179,13 +159,13 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "init", Create },
         { "set_option", Set_option },

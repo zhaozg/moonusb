@@ -25,11 +25,8 @@
 
 #include "internal.h"
 
-lua_State *moonusb_L;
-
 static int moonusb_gc(lua_State *L) {
     enums_free_all(L);
-    moonusb_L = NULL;
     return 0;
 }
 
@@ -37,7 +34,6 @@ int luaopen_moonusb(lua_State *L)
 /* Lua calls this function to load the module */
     {
     int top;
-    moonusb_L = L;
 
     moonusb_utils_init(L);
 

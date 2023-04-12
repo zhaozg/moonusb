@@ -31,7 +31,7 @@ static int freetransfer(lua_State *L, ud_t *ud)
     int submitted = IsSubmitted(ud);
 //  freechildren(L, _MT, ud);
     if(!freeuserdata(L, ud, "transfer")) return 0;
-    if(submitted) 
+    if(submitted)
         (void)libusb_cancel_transfer(transfer);
     libusb_free_transfer(transfer);
     return 0;
@@ -92,11 +92,10 @@ static int Cancel(lua_State *L)
 
 static void Callback(transfer_t *transfer)
     {
-#define L moonusb_L
     int rc, resubmit;
-    int top = lua_gettop(L);
     ud_t *ud = userdata(transfer);
-    if(!ud) { unexpected(L); return; }
+    lua_State *L = ud->L;
+    int top = lua_gettop(L);
     CancelSubmitted(ud);
     lua_rawgeti(L, LUA_REGISTRYINDEX, ud->ref1);
     pushtransfer(L, transfer);
@@ -111,7 +110,6 @@ static void Callback(transfer_t *transfer)
     else
         ud->destructor(L, ud);
     return;
-#undef L
     }
 
 static int Submit_control_transfer(lua_State *L)
@@ -295,7 +293,7 @@ static int Get_stream_id(lua_State *L)
 
 DESTROY_FUNC(transfer)
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "cancel", Cancel },
         { "get_status", Get_status },
@@ -306,13 +304,13 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg DevhandleMethods[] = 
+static const struct luaL_Reg DevhandleMethods[] =
     {
         { "submit_control_transfer", Submit_control_transfer },
         { "submit_bulk_transfer", Submit_bulk_transfer },
@@ -322,7 +320,7 @@ static const struct luaL_Reg DevhandleMethods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "encode_control_setup", Encode_control_setup },
         { "decode_control_setup", Decode_control_setup },
