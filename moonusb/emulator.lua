@@ -30,6 +30,8 @@
 local socket = require("socket")
 local usb = require("moonusb") -- for utilities only
 local has_timers, timers = pcall(require, "moontimers") -- optional
+local bit = require('bit')
+require('compat53')
 
 -- Utilities
 local fmt = string.format
@@ -37,7 +39,7 @@ local function printf(...) io.write(fmt(...)) end
 local rep, pack, unpack = string.rep, string.pack, string.unpack
 local doubleface = usb.doubleface
 local hex, bcd2str, str2bcd = usb.hex, usb.bcd2str, usb.str2bcd
-local zeropad, packbytes, unpackbytes = usb.zeropad, usb.packbytes, usb.unpackbytes 
+local zeropad, packbytes, unpackbytes = usb.zeropad, usb.packbytes, usb.unpackbytes
 
 local client -- the currently connected client
 
@@ -271,7 +273,7 @@ local function start(cfg)
    DETACHED = cfg.detached or function() end
    RECEIVE_SUBMIT = cfg.receive_submit
    RECEIVE_UNLINK = cfg.receive_unlink
-   DEVID = (BUSNUM << 16 | DEVNUM) -- see usbip_common.h in the Linux kernel
+   DEVID = bit.bor(bit.lshift(BUSNUM,16), DEVNUM) -- see usbip_common.h in the Linux kernel
    BUSID = pack("c32", BUSNUM.."-"..DEVNUM)
    -- Create server socket and start listening for client connections
    printf("starting moonusb device emulator on ip=%s:%d\n", IP, PORT)
@@ -289,7 +291,7 @@ local function start(cfg)
          while true do
             if has_timers then timers.trigger() end
             r = socket.select(recvt, nil, 0)
-            if r and r[client] then 
+            if r and r[client] then
                if not receive_cmd() then break end
             end
          end

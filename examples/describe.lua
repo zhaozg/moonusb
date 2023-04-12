@@ -3,13 +3,15 @@
 -- Describes a device, given its vendor id and product id.
 
 local usb = require("moonusb")
+local bit = require('bit')
+require('compat53')
 
 local function fmt(...) return string.format(...) end
 
 local vendor_id = tonumber(arg[1])
 local product_id = tonumber(arg[2])
 if not vendor_id or not product_id or
-   vendor_id & 0x0000ffff ~= vendor_id or product_id & 0x0000ffff ~= product_id then
+   bit.band(vendor_id, 0x0000ffff) ~= vendor_id or bit.band(product_id, 0x0000ffff) ~= product_id then
    print("Usage:   "..arg[0].." vendor_id product_id")
    print("Example: "..arg[0].." 0x0012 0x0034 \n")
    os.exit(true)
@@ -26,7 +28,11 @@ local function hex(bytes)
 end
 
 local function bcd2string(x)
-   return string.format("%d%d.%d%d", (x>>12)&0x0f, (x>>8)&0x0f, (x>>4)&0xf, x&0xf)
+   return string.format("%d%d.%d%d",
+      bit.band(bit.rshift(x, 12), 0x0f),
+      bit.band(bit.rshift(x, 8), 0x0f),
+      bit.band(bit.rshift(x, 4), 0x0f),
+      bit.band(x, 0x0f))
 end
 
 local function decode_hid_descriptor(bytes)
@@ -69,7 +75,7 @@ print("  port path: ".. (#ports>0 and table.concat(ports, ', ') or "n.a."))
 print("  address: "..address)
 print("  speed: "..speed)
 
--- Get the device descriptor (also cached) and print its fields 
+-- Get the device descriptor (also cached) and print its fields
 local desc = device:get_device_descriptor()
 print("Device descriptor")
 print("  usb_version: "..desc.usb_version)
@@ -84,15 +90,15 @@ print("  num_configurations: "..desc.num_configurations)
 -- The descriptor contains indices of string descriptors.
 -- For any non-zero index, we should be able to retrieve the corresponding string.
 local manufacturer, product, serial_number = "???", "???", "???"
-if desc.manufacturer_index ~= 0 then 
+if desc.manufacturer_index ~= 0 then
    manufacturer = devhandle:get_string_descriptor(desc.manufacturer_index)
 end
 print("  manufacturer: "..manufacturer)
-if desc.product_index ~= 0 then 
+if desc.product_index ~= 0 then
    product = devhandle:get_string_descriptor(desc.product_index)
 end
 print("  product: "..product)
-if desc.serial_number_index ~= 0 then 
+if desc.serial_number_index ~= 0 then
    serial_number = devhandle:get_string_descriptor(desc.serial_number_index)
 end
 print("  serial number: "..serial_number)
@@ -149,7 +155,7 @@ for _, conf in ipairs(desc.configuration) do
             print("      synch_address: "..fmt("0x%.2x", ep.synch_address))
             print("      extra bytes: ".. (ep.extra and hex(ep.extra) or "-"))
             local comp = ep.ss_endpoint_companion_descriptor
-            if comp then 
+            if comp then
                print("      Endpoint companion")
                print("        max_burst: ", comp.max_burst)
                print("        attributes: ", comp.attributes)
