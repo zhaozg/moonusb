@@ -27,25 +27,27 @@
 
 lua_State *moonusb_L;
 
-static void AtExit(void)
-    {
-    if(moonusb_L)
-        {
-        enums_free_all(moonusb_L);
-        moonusb_L = NULL;
-        }
-    }
+static int moonusb_gc(lua_State *L) {
+    enums_free_all(L);
+    moonusb_L = NULL;
+    return 0;
+}
 
- 
 int luaopen_moonusb(lua_State *L)
 /* Lua calls this function to load the module */
     {
+    int top;
     moonusb_L = L;
 
     moonusb_utils_init(L);
-    atexit(AtExit);
 
     lua_newtable(L); /* the module table */
+    top = lua_gettop(L);
+    lua_newtable(L); /* the metatable table */
+    lua_pushliteral(L, "__gc");
+    lua_pushcfunction(L, moonusb_gc);
+    lua_rawset(L, -3);
+    lua_setmetatable(L, top);
     moonusb_open_enums(L);
 //  moonusb_open_flags(L);
     moonusb_open_tracing(L);
