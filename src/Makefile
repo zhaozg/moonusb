@@ -1,9 +1,10 @@
 
 ifdef MINGW_PREFIX
 MINGW=1
-else
-LINUX=1
 endif
+
+#LINUX=1
+MACOS=1
 
 # Lua version
 LUAVER?=$(shell lua -e 'print(string.match(_VERSION, "%d+%.%d+") or "5.3")')
@@ -51,28 +52,32 @@ LIBUSB_OBJS := $(LIBUSB_SRCS:.c=.o)
 
 INCDIR = -Ilibusb/libusb -I. -I/usr/local/include/lua$(LUAVER)
 
-COPT	+= -O2
-#COPT	+= -O0 -g
 #COPT	+= -m32
 COPT	+= -Wfatal-errors
 COPT	+= -Wall -Wextra -Wpedantic
 COPT	+= -DCOMPAT53_PREFIX=moonusb_compat_
-COPT    += -std=gnu99
+COPT    += -std=gnu11
 COPT 	+= -DLUAVER=$(LUAVER)
 ifdef LINUX
 COPT    += -fpic
 COPT	+= -DLINUX
 endif
+ifdef MACOS
+COPT    += -fpic
+COPT	+= -DMACOS
+endif
 ifdef MINGW
 COPT	+= -DMINGW
 endif
 ifdef DEBUG
-COPT	+= -DDEBUG
-COPT 	+= -Wshadow -Wsign-compare -Wundef -Wwrite-strings
+COPT	+= -DDEBUG -Og -g
+COPT	+= -Wshadow -Wsign-compare -Wundef -Wwrite-strings
 COPT	+= -Wdisabled-optimization -Wdeclaration-after-statement
 COPT    += -Wmissing-prototypes -Wstrict-prototypes -Wnested-externs
 COPT    += -Wold-style-definition
 #COPT    += -Wc++-compat
+else
+COPT	+= -O2
 endif
 
 override CFLAGS = $(COPT) $(INCDIR)
@@ -102,6 +107,10 @@ ifdef LINUX
 	@-cp -fpv $(Tgt).so $(C_DIR)
 	@-ln -fsv $(C_DIR)/$(Tgt).so $(S_DIR)/lib$(Tgt).so
 endif
+ifdef MACOS
+	@-cp -fpv $(Tgt).so $(C_DIR)
+	@-ln -fsv $(C_DIR)/$(Tgt).so $(S_DIR)/lib$(Tgt).so
+endif
 ifdef MINGW
 	@-cp -fpv $(Tgt).dll $(C_DIR)
 endif
@@ -120,6 +129,9 @@ symbols: build
 
 $(Tgt):	$(Objs) $(LIBUSB_OBJS)
 ifdef LINUX
+	@$(CXX) -shared -o $(Tgt).so $(Objs) $(LIBUSB_OBJS) $(LIBDIR) $(LIBS)
+endif
+ifdef MACOS
 	@$(CXX) -shared -o $(Tgt).so $(Objs) $(LIBUSB_OBJS) $(LIBDIR) $(LIBS)
 endif
 ifdef MINGW

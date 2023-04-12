@@ -114,7 +114,7 @@ void Free(lua_State *L, void *ptr)
  | Time utilities                                                               |
  *------------------------------------------------------------------------------*/
 
-#if defined(LINUX) || defined(__MACH__)
+#if defined(LINUX)
 
 #if 0
 static double tstosec(const struct timespec *ts)
@@ -193,7 +193,19 @@ static void time_init(lua_State *L)
     (void)L;
     QueryPerformanceFrequency(&Frequency);
     }
-
+#elif defined(MACOS)
+void sleeep(double seconds)
+    {
+    usleep((useconds_t)(seconds*1.0e6));
+    }
+double now(void)
+    {
+    struct timeval tv;
+    if(gettimeofday(&tv, NULL) != 0)
+        { printf("gettimeofday error\n"); return -1; }
+    return tv.tv_sec + tv.tv_usec*1.0e-6;
+    }
+#define time_init(L) do { (void)L; /* do nothing */ } while(0)
 #endif
 
 
