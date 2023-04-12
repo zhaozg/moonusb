@@ -25,24 +25,27 @@
 
 
 #include "internal.h"
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 /*------------------------------------------------------------------------------*
  | Misc utilities                                                               |
  *------------------------------------------------------------------------------*/
 
-int noprintf(const char *fmt, ...) 
+int noprintf(const char *fmt, ...)
     { (void)fmt; return 0; }
 
-int notavailable(lua_State *L, ...) 
-    { 
+int notavailable(lua_State *L, ...)
+    {
     return luaL_error(L, "function not available in this CL version");
     }
-  
+
 /*------------------------------------------------------------------------------*
  | Malloc                                                                       |
  *------------------------------------------------------------------------------*/
 
-/* We do not use malloc(), free() etc directly. Instead, we inherit the memory 
+/* We do not use malloc(), free() etc directly. Instead, we inherit the memory
  * allocator from the main Lua state instead (see lua_getallocf in the Lua manual)
  * and use that.
  *
@@ -111,7 +114,7 @@ void Free(lua_State *L, void *ptr)
  | Time utilities                                                               |
  *------------------------------------------------------------------------------*/
 
-#if defined(LINUX)
+#if defined(LINUX) || defined(__MACH__)
 
 #if 0
 static double tstosec(const struct timespec *ts)
@@ -120,11 +123,13 @@ static double tstosec(const struct timespec *ts)
     }
 #endif
 
+#if _POSIX_C_SOURCE >= 199309L
 static void sectots(struct timespec *ts, double seconds)
     {
     ts->tv_sec=(time_t)seconds;
     ts->tv_nsec=(long)((seconds-((double)ts->tv_sec))*1.0e9);
     }
+#endif
 
 double now(void)
     {
@@ -202,7 +207,7 @@ void *checklightuserdata(lua_State *L, int arg)
         { luaL_argerror(L, arg, "expected lightuserdata"); return NULL; }
     return lua_touserdata(L, arg);
     }
-    
+
 void *optlightuserdata(lua_State *L, int arg)
     {
     if(lua_isnoneornil(L, arg))
@@ -233,7 +238,7 @@ int copytable(lua_State *L)
     int src = lua_gettop(L);
     int dst = src - 1;
     lua_pushnil(L);
-    while(lua_next(L, src)) 
+    while(lua_next(L, src))
         {
         lua_pushvalue(L, -2);  // key
         if(lua_type(L, -1)==LUA_TTABLE) /* nested */

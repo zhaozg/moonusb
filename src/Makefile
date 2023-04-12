@@ -33,18 +33,23 @@ ifeq ($(D),1)
 DEBUG=1
 endif
 
-ifdef LINUX
-LIBS = -lusb-1.0
-endif
-ifdef MINGW
-LIBS = -lusb-1.0 -llua
-endif
+LIBS = -L/usr/local/lib -lluajit-5.1 -lobjc \
+       -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security
+
+
+LIBUSB_DIR   = libusb/libusb
+
+LIBUSB_SRCS  = $(wildcard $(LIBUSB_DIR)/*.c)
+LIBUSB_SRCS += $(LIBUSB_DIR)/os/darwin_usb.c $(LIBUSB_DIR)/os/events_posix.c \
+	       $(LIBUSB_DIR)/os/threads_posix.c
+
 
 Tgt	:= moonusb
 Src := $(wildcard *.c)
 Objs := $(Src:.c=.o)
+LIBUSB_OBJS := $(LIBUSB_SRCS:.c=.o)
 
-INCDIR = -I. -I/usr/include/lua$(LUAVER)
+INCDIR = -Ilibusb/libusb -I. -I/usr/local/include/lua$(LUAVER)
 
 COPT	+= -O2
 #COPT	+= -O0 -g
@@ -113,13 +118,13 @@ build:	clean $(Tgt)
 symbols: build
 	@objdump -T $(Tgt).so > $(Tgt).symbols
 
-$(Tgt):	$(Objs)
+$(Tgt):	$(Objs) $(LIBUSB_OBJS)
 ifdef LINUX
-	@$(CXX) -shared -o $(Tgt).so $(Objs) $(LIBDIR) $(LIBS)
+	@$(CXX) -shared -o $(Tgt).so $(Objs) $(LIBUSB_OBJS) $(LIBDIR) $(LIBS)
 endif
 ifdef MINGW
-	@-$(CXX) -shared -o $(Tgt).dll $(Objs) $(LIBDIR) $(LIBS)
+	@-$(CXX) -shared -o $(Tgt).dll $(Objs) $(LIBUSB_OBJS) $(LIBDIR) $(LIBS)
 endif
-	@-rm -f $(Objs)
+	@-rm -f $(Objs) $(LIBUSB_OBJS)
 	@echo
 
