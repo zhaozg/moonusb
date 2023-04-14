@@ -56,8 +56,8 @@ INCDIR = -Ilibusb/libusb -I. -I/usr/local/include/lua$(LUAVER)
 COPT	+= -Wfatal-errors
 COPT	+= -Wall -Wextra -Wpedantic
 COPT	+= -DCOMPAT53_PREFIX=moonusb_compat_
-COPT    += -std=gnu11
-COPT 	+= -DLUAVER=$(LUAVER)
+COPT    += -std=c11
+COPT	+= -DLUAVER=$(LUAVER)
 ifdef LINUX
 COPT    += -fpic
 COPT	+= -DLINUX
