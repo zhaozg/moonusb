@@ -57,7 +57,6 @@ COPT	+= -Wfatal-errors
 COPT	+= -Wall -Wextra -Wpedantic
 COPT	+= -DCOMPAT53_PREFIX=moonusb_compat_
 COPT    += -std=c11
-COPT	+= -DLUAVER=$(LUAVER)
 ifdef LINUX
 COPT    += -fpic
 COPT	+= -DLINUX

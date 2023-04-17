@@ -94,8 +94,11 @@ void *MallocNoErr(lua_State *L, size_t size) /* do not raise errors (check the r
 
 char *Strdup(lua_State *L, const char *s)
     {
-    size_t len = strnlen(s, 256);
-    char *ptr = (char*)Malloc(L, len + 1);
+    size_t len = strlen(s);
+    char *ptr;
+    if (len > 255)
+        len = 255;
+    ptr = (char*)Malloc(L, len + 1);
     if(len>0)
         memcpy(ptr, s, len);
     ptr[len]='\0';
