@@ -57,7 +57,7 @@ int udata_push(lua_State*, uint64_t);
 #define udata_free_all moonusb_udata_free_all
 void udata_free_all(lua_State *L);
 #define udata_scan moonusb_udata_scan
-int udata_scan(lua_State *L, const char *mt,  
+int udata_scan(lua_State *L, const char *mt,
             void *info, int (*func)(lua_State *L, const void *mem, const char* mt, const void *info));
 #define udata_define moonusb_udata_define
 int udata_define(lua_State*, const char*, const luaL_Reg*, const luaL_Reg*);

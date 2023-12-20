@@ -317,7 +317,7 @@ static int pushbosdevcapabilitydescriptordecoded(lua_State *L, struct libusb_bos
             pushcontaineriddescriptor(L, container_id);
             libusb_free_container_id_descriptor(container_id);
             break;
-        //case LIBUSB_BT_WIRELESS_USB_DEVICE_CAPABILITY: 
+        //case LIBUSB_BT_WIRELESS_USB_DEVICE_CAPABILITY:
         default:
             lua_pushnil(L);
             break;

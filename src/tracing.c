@@ -24,7 +24,7 @@
  */
 
 #include "internal.h"
-    
+
 int trace_objects = 0;
 
 static int TraceObjects(lua_State *L)
@@ -47,7 +47,7 @@ static int Since(lua_State *L)
     }
 
 /* ----------------------------------------------------------------------- */
- 
+
 static int Setlocale(lua_State *L)
     {
     const char* locale = luaL_checkstring(L, 1);
@@ -55,7 +55,7 @@ static int Setlocale(lua_State *L)
     CheckError(L, ec);
     return 0;
     }
- 
+
 static int has_cap = 0;
 static int Has_capability(lua_State *L)
     {
@@ -135,7 +135,7 @@ static int AddVersions(lua_State *L)
     return 0;
     }
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "trace_objects", TraceObjects },
         { "now", Now },

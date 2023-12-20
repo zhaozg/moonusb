@@ -82,7 +82,7 @@ static int Get_number(lua_State *L)
 DESTROY_FUNC(interface)
 //PARENT_FUNC(interface)
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "release", Destroy },
         { "set_alt_setting", Set_alt_setting },
@@ -91,13 +91,13 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { NULL, NULL } /* sentinel */
     };

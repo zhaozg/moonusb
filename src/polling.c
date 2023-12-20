@@ -65,14 +65,14 @@ static int Get_next_timeout(lua_State *L)
     return 0;
     }
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "handle_events", Handle_events },
         { "get_next_timeout", Get_next_timeout },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { NULL, NULL } /* sentinel */
     };

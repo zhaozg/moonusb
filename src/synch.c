@@ -68,7 +68,7 @@ F(Bulk_transfer, libusb_bulk_transfer)
 F(Interrupt_transfer, libusb_interrupt_transfer)
 #undef F
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "control_transfer", Control_transfer },
         { "bulk_transfer", Bulk_transfer },
@@ -76,7 +76,7 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { NULL, NULL } /* sentinel */
     };

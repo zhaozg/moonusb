@@ -186,7 +186,7 @@ F(Get_config_descriptor_by_value, libusb_get_config_descriptor_by_value)
 RAW_FUNC(device)
 DESTROY_FUNC(device)
 
-static const struct luaL_Reg Methods[] = 
+static const struct luaL_Reg Methods[] =
     {
         { "raw", Raw },
         { "open", Open },
@@ -206,13 +206,13 @@ static const struct luaL_Reg Methods[] =
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg MetaMethods[] = 
+static const struct luaL_Reg MetaMethods[] =
     {
         { "__gc",  Destroy },
         { NULL, NULL } /* sentinel */
     };
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { NULL, NULL } /* sentinel */
     };
@@ -222,7 +222,7 @@ void moonusb_open_device(lua_State *L)
     udata_define(L, DEVICE_MT, Methods, MetaMethods);
     luaL_setfuncs(L, Functions, 0);
     }
- 
+
 #if 0
 //device_t * libusb_ref_device(device_t *dev);
 //void libusb_unref_device(device_t *dev);

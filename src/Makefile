@@ -7,7 +7,7 @@ endif
 MACOS=1
 
 # Lua version
-LUAVER?=$(shell lua -e 'print(string.match(_VERSION, "%d+%.%d+") or "5.3")')
+LUAVER?=$(shell luajit -e 'print(string.match(_VERSION, "%d+%.%d+") or "5.3")')
 ifeq ($(LUAVER),)
 # lua-interpreter not found
 LUAVER=5.3
@@ -21,6 +21,19 @@ ifdef MINGW
 PREFIX?=$(MINGW_PREFIX)
 endif
 
+ifdef MACOS
+DIR=$(shell brew --prefix luajit)
+# Directory where to install Lua modules
+L_DIR=$(PREFIX)/share/lua/$(LUAVER)
+# Directory where to install Lua C modules
+C_DIR=$(PREFIX)/lib/lua/$(LUAVER)
+# Directory where to install C headers
+H_DIR=$(DIR)/include
+# Directory where to install C libraries
+S_DIR=$(DIR)/lib
+LIBS = -L/usr/local/lib -lluajit-5.1 -lobjc \
+       -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security
+else
 # Directory where to install Lua modules
 L_DIR=$(PREFIX)/share/lua/$(LUAVER)
 # Directory where to install Lua C modules
@@ -29,13 +42,11 @@ C_DIR=$(PREFIX)/lib/lua/$(LUAVER)
 H_DIR=$(PREFIX)/include
 # Directory where to install C libraries
 S_DIR=$(PREFIX)/lib
+endif
 
 ifeq ($(D),1)
 DEBUG=1
 endif
-
-LIBS = -L/usr/local/lib -lluajit-5.1 -lobjc \
-       -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security
 
 
 LIBUSB_DIR   = libusb/libusb

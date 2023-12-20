@@ -72,11 +72,11 @@ void enums_freelist(lua_State *L, int *list);
 #define MOONUSB_TYPE_UINT         6
 #define MOONUSB_TYPE_LONG         7
 #define MOONUSB_TYPE_ULONG        8
-#define MOONUSB_TYPE_FLOAT        9 
+#define MOONUSB_TYPE_FLOAT        9
 #define MOONUSB_TYPE_DOUBLE       10
 
 /* USB class codes, used instead of libusb_class_code.
- * (see https://www.usb.org/defined-class-codes). 
+ * (see https://www.usb.org/defined-class-codes).
  */
 #define CLASS_PER_INTERFACE             0x00    /* device */
 #define CLASS_AUDIO                     0x01    /* interface */
@@ -222,7 +222,7 @@ void enums_freelist(lua_State *L, int *list);
 #define pushxxx(L, val) enums_push((L), DOMAIN_XXX, (int)(val))
 #define valuesxxx(L) enums_values((L), DOMAIN_XXX)
     CASE(xxx);
-#define DOMAIN_XXX 
+#define DOMAIN_XXX
 
 #endif
 

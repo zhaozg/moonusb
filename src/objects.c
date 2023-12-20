@@ -40,13 +40,13 @@ ud_t *newuserdata(lua_State *L, void *handle, const char *mt, const char *tracen
 
 int freeuserdata(lua_State *L, ud_t *ud, const char *tracename)
     {
-    /* The 'Valid' mark prevents double calls when an object is explicitly destroyed, 
+    /* The 'Valid' mark prevents double calls when an object is explicitly destroyed,
      * and subsequently deleted also by the GC (the ud sticks around until the GC
      * collects it, so we mark it as invalid when the object is explicitly destroyed
      * by the script, or implicitly destroyed because child of a destroyed object). */
     if(!IsValid(ud)) return 0;
     CancelValid(ud);
-    if(ud->info) 
+    if(ud->info)
         Free(L, ud->info);
     if(ud->ref1!=LUA_NOREF) luaL_unref(L, LUA_REGISTRYINDEX, ud->ref1);
     if(ud->ref2!=LUA_NOREF) luaL_unref(L, LUA_REGISTRYINDEX, ud->ref2);
@@ -114,7 +114,7 @@ void *testoneofxxx(lua_State *L, int arg, ud_t **udp, char **mtp)
 void *checkxxx(lua_State *L, int arg, ud_t **udp, const char *mt)
     {
     ud_t *ud = (ud_t*)udata_test(L, arg, mt);
-    if(ud && IsValid(ud)) 
+    if(ud && IsValid(ud))
         { if(udp) *udp = ud; return ud->handle; }
     lua_pushfstring(L, "not a %s", mt);
     luaL_argerror(L, arg, lua_tostring(L, -1));
@@ -140,7 +140,7 @@ void** checkxxxlist(lua_State *L, int arg, int *count, int *err, const char *mt)
  * Checks if the variable at arg on the Lua stack is a list of xxx objects.
  * On success, returns an array of xxx handles and sets its length in *count.
  * The array s Malloc'd and must be released by the caller using Free(L, ...).
- * On error, sets *err to ERR_XXX, *count to 0, and returns NULL. 
+ * On error, sets *err to ERR_XXX, *count to 0, and returns NULL.
  */
     {
     void** list;
