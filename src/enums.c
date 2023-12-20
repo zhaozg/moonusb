@@ -40,35 +40,35 @@ struct rec_s {
 };
 
 /* compare functions */
-static int cmp_code(rec_t *rec1, rec_t *rec2) 
-    { 
+static int cmp_code(rec_t *rec1, rec_t *rec2)
+    {
     if(rec1->domain != rec2->domain)
         return (rec1->domain < rec2->domain ? -1 : rec1->domain > rec2->domain);
     return (rec1->code < rec2->code ? -1 : rec1->code > rec2->code);
-    } 
+    }
 
-static int cmp_str(rec_t *rec1, rec_t *rec2) 
-    { 
+static int cmp_str(rec_t *rec1, rec_t *rec2)
+    {
     if(rec1->domain != rec2->domain)
         return (rec1->domain < rec2->domain ? -1 : rec1->domain > rec2->domain);
     return strcmp(rec1->str, rec2->str);
-    } 
+    }
 
 static RB_HEAD(CodeTree, rec_s) CodeHead = RB_INITIALIZER(&CodeHead);
-RB_PROTOTYPE_STATIC(CodeTree, rec_s, CodeEntry, cmp_code) 
-RB_GENERATE_STATIC(CodeTree, rec_s, CodeEntry, cmp_code) 
+RB_PROTOTYPE_STATIC(CodeTree, rec_s, CodeEntry, cmp_code)
+RB_GENERATE_STATIC(CodeTree, rec_s, CodeEntry, cmp_code)
 
 static RB_HEAD(StringTree, rec_s) StringHead = RB_INITIALIZER(&StringHead);
-RB_PROTOTYPE_STATIC(StringTree, rec_s, StringEntry, cmp_str) 
-RB_GENERATE_STATIC(StringTree, rec_s, StringEntry, cmp_str) 
- 
-static rec_t *code_remove(rec_t *rec) 
+RB_PROTOTYPE_STATIC(StringTree, rec_s, StringEntry, cmp_str)
+RB_GENERATE_STATIC(StringTree, rec_s, StringEntry, cmp_str)
+
+static rec_t *code_remove(rec_t *rec)
     { return RB_REMOVE(CodeTree, &CodeHead, rec); }
-static rec_t *code_insert(rec_t *rec) 
+static rec_t *code_insert(rec_t *rec)
     { return RB_INSERT(CodeTree, &CodeHead, rec); }
-static rec_t *code_search(int domain, int code) 
+static rec_t *code_search(int domain, int code)
     { rec_t tmp; tmp.domain = domain; tmp.code = code; return RB_FIND(CodeTree, &CodeHead, &tmp); }
-static rec_t *code_first(int domain, int code) 
+static rec_t *code_first(int domain, int code)
     { rec_t tmp; tmp.domain = domain; tmp.code = code; return RB_NFIND(CodeTree, &CodeHead, &tmp); }
 static rec_t *code_next(rec_t *rec)
     { return RB_NEXT(CodeTree, &CodeHead, rec); }
@@ -82,15 +82,15 @@ static rec_t *code_max(void)
 static rec_t *code_root(void)
     { return RB_ROOT(&CodeHead); }
 #endif
- 
-static rec_t *str_remove(rec_t *rec) 
+
+static rec_t *str_remove(rec_t *rec)
     { return RB_REMOVE(StringTree, &StringHead, rec); }
-static rec_t *str_insert(rec_t *rec) 
+static rec_t *str_insert(rec_t *rec)
     { return RB_INSERT(StringTree, &StringHead, rec); }
-static rec_t *str_search(int domain, const char* str) 
+static rec_t *str_search(int domain, const char* str)
     { rec_t tmp; tmp.domain = domain; tmp.str = (char*)str; return RB_FIND(StringTree, &StringHead, &tmp); }
 #if 0
-static rec_t *str_first(int domain, const char* str ) 
+static rec_t *str_first(int domain, const char* str )
     { rec_t tmp; tmp.domain = domain; tmp.str = str; return RB_NFIND(StringTree, &StringHead, &tmp); }
 static rec_t *str_next(rec_t *rec)
     { return RB_NEXT(StringTree, &StringHead, rec); }
@@ -108,7 +108,7 @@ static rec_t *str_root(void)
 static int enums_new(lua_State *L, int domain, int code, const char *str)
     {
     rec_t *rec;
-    if((rec = (rec_t*)Malloc(L, sizeof(rec_t))) == NULL) 
+    if((rec = (rec_t*)Malloc(L, sizeof(rec_t))) == NULL)
         return luaL_error(L, errstring(ERR_MEMORY));
 
     memset(rec, 0, sizeof(rec_t));
@@ -116,9 +116,9 @@ static int enums_new(lua_State *L, int domain, int code, const char *str)
     rec->code = code;
     rec->str = Strdup(L, str);
     if(code_search(domain, code) || str_search(domain, str))
-        { 
+        {
         Free(L, rec->str);
-        Free(L, rec); 
+        Free(L, rec);
         return unexpected(L); /* duplicate value */
         }
     code_insert(rec);
@@ -133,7 +133,7 @@ static void enums_free(lua_State *L, rec_t* rec)
     if(str_search(rec->domain, rec->str) == rec)
         str_remove(rec);
     Free(L, rec->str);
-    Free(L, rec);   
+    Free(L, rec);
     }
 
 void enums_free_all(lua_State *L)
@@ -149,7 +149,7 @@ int enums_code(int domain, const char *str, int* found)
     rec_t *rec = str_search(domain, str);
     if(!rec)
         { *found = 0; return 0; }
-    *found = 1; 
+    *found = 1;
     return rec->code;
     }
 
@@ -266,8 +266,8 @@ void enums_freelist(lua_State *L, int *list)
 
 static int Enum(lua_State *L)
 /* { strings } = ode.enum('type') lists all the values for a given enum type */
-    { 
-    const char *s = luaL_checkstring(L, 1); 
+    {
+    const char *s = luaL_checkstring(L, 1);
 #define CASE(xxx) if(strcmp(s, ""#xxx) == 0) return values##xxx(L)
     CASE(type);
     CASE(class);
@@ -289,7 +289,7 @@ static int Enum(lua_State *L)
     return 0;
     }
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "enum", Enum },
         { NULL, NULL } /* sentinel */

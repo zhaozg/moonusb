@@ -73,7 +73,8 @@ static int Set_option(lua_State *L)
     return 0;
     }
 
-static void LogCallback(context_t *context, enum libusb_log_level level, const char *str)
+static void LIBUSB_CALL
+LogCallback(libusb_context *context, enum libusb_log_level level, const char *str)
     {
     ud_t *ud = userdata(context);
     lua_State *L = ud->L;

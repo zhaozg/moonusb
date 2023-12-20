@@ -90,7 +90,8 @@ static int Cancel(lua_State *L)
     return 0;
     }
 
-static void Callback(transfer_t *transfer)
+static void LIBUSB_CALL
+Callback(transfer_t *transfer)
     {
     int rc, resubmit;
     ud_t *ud = userdata(transfer);

@@ -24,7 +24,7 @@
  */
 
 #include "internal.h"
- 
+
 size_t sizeoftype(int type)
     {
     switch(type)
@@ -88,7 +88,7 @@ static int Flatten1_(lua_State *L, int table_index, int cur_index, int arg)
     }
 
 int toflattable(lua_State *L, int arg)
-/* Creates a flat table with all the arguments starting from arg, and leaves 
+/* Creates a flat table with all the arguments starting from arg, and leaves
  * it on top of the stack.
  */
     {
@@ -324,7 +324,7 @@ int pushdata(lua_State *L, int type, void *data, size_t datalen)
     return Unpack_(L, type, data, datalen);
     }
 
-static const struct luaL_Reg Functions[] = 
+static const struct luaL_Reg Functions[] =
     {
         { "flatten", Flatten },
         { "flatten_table", FlattenTable },

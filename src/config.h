@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#include "libusb/msvc/config.h"
+#else
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -163,4 +166,5 @@
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
 /* #undef inline */
+#endif
 #endif

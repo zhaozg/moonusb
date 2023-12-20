@@ -36,7 +36,8 @@ static int freehotplug(lua_State *L, ud_t *ud)
     return 0;
     }
 
-static int Callback(context_t *context, device_t *device, libusb_hotplug_event event, void *user_data)
+static int LIBUSB_CALL
+Callback(context_t *context, device_t *device, libusb_hotplug_event event, void *user_data)
     {
 #define hotplug ((hotplug_t*)(user_data))
     int rc;
